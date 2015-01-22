@@ -7254,11 +7254,28 @@ dc.legend = function () {
                 .attr('stroke-dasharray', dc.pluck('dashstyle'))
                 .attr('stroke', dc.pluck('color'));
         } else {
+            var stroke = 2;
+            var radius = Math.ceil(_itemHeight/2);
+
             itemEnter
-                .append('rect')
-                .attr('width', _itemHeight)
-                .attr('height', _itemHeight)
-                .attr('fill', function (d) {return d ? d.color : 'blue';});
+                //.append('rect')
+                //.attr('width', _itemHeight)
+                //.attr('height', _itemHeight)
+                //.attr('fill', function (d) {return d ? d.color : 'blue';});
+
+                .append('circle')
+                .attr('cx', radius + stroke)
+                .attr('cy', radius + stroke + 2)
+                .attr('r',  radius)
+                .style('stroke', function (d) {return d ? d.color : 'blue';})
+                .style('stroke-width', stroke)
+                .attr('fill', '#FFF');
+
+            itemEnter
+                .append('text')
+                .attr('class', 'percentageText')
+                .attr('x', (radius + stroke) / 2)
+                .attr('y', (radius + stroke) + 7);
         }
 
         itemEnter.append('text')
@@ -7287,7 +7304,17 @@ dc.legend = function () {
                 return 'translate(0,' + i * legendItemHeight() + ')';
             }
         });
+
+        _parent.selectAll('g.dc-legend-item').each(function (d) {
+            if (isSelectedLegendItem(d)) {
+                _parent.highlightSelected(this);
+            }
+        });
     };
+
+    function isSelectedLegendItem(d) {
+        return _parent.hasFilter(d.name);
+    }
 
     function legendItemHeight() {
         return _gap + _itemHeight;
